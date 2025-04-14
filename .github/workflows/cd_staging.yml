@@ -15,5 +15,6 @@ jobs:
           script: whoami
       - name: Pulling recent Changes
         run: |
-          cd monorepo
+          ls
+          cd "monorepo"
           git pull
