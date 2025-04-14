@@ -13,7 +13,13 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
           script: |
+            export PATH=/home/ubuntu/.nvm/versions/node/v22.14.0/bin:$PATH
             cd /home/ubuntu/monorepo
             git pull
-            export PATH=/home/ubuntu/.nvm/versions/node/v22.14.0/bin:$PATH
-            pnpm --version
+            pnpm i
+            npx turbo run build --filter=http-server
+            npx turbo run build --filter=ws-server
+            npx turbo run build
+            pm2 restart http-server
+            pm2  restart ws-server
+            pm2 restart fe
