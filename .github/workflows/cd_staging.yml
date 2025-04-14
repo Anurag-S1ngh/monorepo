@@ -1,18 +1,15 @@
-name: Deploy to staging
-on:
-  push:
-    branches: [main]
-
+name: remote ssh command
+on: [push]
 jobs:
-  redeploy_everything:
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    name: Deploying everything to the staging cluster
     steps:
-      - run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
-          mkdir -p /home/runner/.ssh
-          ls /home/runner/.ssh
-          touch /home/runner/.ssh/known_hosts
-          echo "${{ secrets.KNOWN_HOSTS }}" &> /home/runner/.ssh/known_hosts
-          chmod 700 /home/runner/ssh_key
-          ssh -i ~/ssh_key ubuntu@13.60.190.241 -t "cd monorepo && git pull origin main && export PATH=/home/ubuntu/.nvm/versions/node/v22.13.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin && npm install -g pnpm && pnpm install && pnpm run build && pm2 restart fe && pm2 restart http-server && pm2 restart ws-server"
+      - name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: whoami
