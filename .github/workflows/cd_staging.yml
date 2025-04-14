@@ -18,9 +18,19 @@ jobs:
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
           chmod 600 ssh_key
-          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.60.190.241 << 'EOF'
-            cd monorepo
+          ssh -tt -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.60.190.241 << 'EOF'
+            # Stash changes to prevent conflicts during git pull
+            git stash
             git pull
+            git stash pop
+
+            # Install necessary tools if not installed
+            curl -fsSL https://get.pnpm.io/install.sh | sh -
+            npm install -g pm2
+            npm install -g npx
+
+            # Run the build steps
+            cd monorepo
             pnpm i
             npx turbo run build --filter=http-server
             npx turbo run build --filter=ws-server
