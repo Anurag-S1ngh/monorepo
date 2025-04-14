@@ -15,5 +15,4 @@ jobs:
           script: |
             cd /home/ubuntu/monorepo
             git pull
-            export PATH=$HOME/.local/share/pnpm:$PATH
-            pnpm --version
+            npm --version
