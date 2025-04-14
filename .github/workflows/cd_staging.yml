@@ -15,5 +15,4 @@ jobs:
           script: whoami
       - name: Pulling recent Changes
         run: |
-          cd
-          ls
+          cd /home/ubuntu/monorepo
