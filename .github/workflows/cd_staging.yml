@@ -22,7 +22,7 @@ jobs:
             pnpm i
             npx turbo run build --filter=http-server
             npx turbo run build --filter=ws-server
-            npx turbo run build
+            npx turbo run build --filter=web
             pm2 restart http-server
             pm2  restart ws-server
             pm2 restart fe
