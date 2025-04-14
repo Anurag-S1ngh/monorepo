@@ -15,6 +15,5 @@ jobs:
           script: whoami
       - name: Pulling recent Changes
         run: |
-          cd home/ubuntu
+          cd home/
           ls
-        shell: bash
