@@ -1,4 +1,5 @@
 name: Deploy to staging
+
 on:
   push:
     branches:
@@ -10,15 +11,21 @@ jobs:
     name: Deploying everything to the staging cluster
 
     steps:
-      - name: SSH into the server
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: SSH and deploy
         run: |
-          echo "${{secrets.SSH_PRIVATE_KEY}}" &> ~/ssh_key
-          ssh -i ~/ssh_key ubuntu@16.171.133.86
-          cd monorepo && git pull 
-          pnpm i
-          npx turbo run build --filter=http-server
-          npx turbo run build --filter=ws-server
-          npx turbo run build
-          pm2 restart http-server
-          pm2 restart ws-server
-          pm2 restart fe
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
+          chmod 600 ssh_key
+          ssh -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.60.190.241 << 'EOF'
+            cd monorepo
+            git pull
+            pnpm i
+            npx turbo run build --filter=http-server
+            npx turbo run build --filter=ws-server
+            npx turbo run build
+            pm2 restart http-server
+            pm2 restart ws-server
+            pm2 restart fe
+          EOF
