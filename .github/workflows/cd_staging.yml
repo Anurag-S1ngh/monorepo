@@ -15,10 +15,4 @@ jobs:
           script: |
             cd /home/ubuntu/monorepo
             git pull
-            pnpm install
-            npx turbo run build --filter=http-server
-            npx turbo run build --filter=ws-server
-            npx turbo run build
-            pm2 restart http-server
-            pm2 restart ws-server
-            pm2 restart fe
+            pnpm --version
