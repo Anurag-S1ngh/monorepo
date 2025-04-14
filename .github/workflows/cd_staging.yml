@@ -1,41 +1,18 @@
 name: Deploy to staging
-
 on:
   push:
-    branches:
-      - "main"
+    branches: [main]
 
 jobs:
   redeploy_everything:
     runs-on: ubuntu-latest
     name: Deploying everything to the staging cluster
-
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-
-      - name: SSH and deploy
-        run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ssh_key
-          chmod 600 ssh_key
-          ssh -tt -o StrictHostKeyChecking=no -i ssh_key ubuntu@13.60.190.241 << 'EOF'
-            # Stash changes to prevent conflicts during git pull
-            git stash
-            git pull
-            git stash pop
-
-            # Install necessary tools if not installed
-            curl -fsSL https://get.pnpm.io/install.sh | sh -
-            npm install -g pm2
-            npm install -g npx
-
-            # Run the build steps
-            cd monorepo
-            pnpm i
-            npx turbo run build --filter=http-server
-            npx turbo run build --filter=ws-server
-            npx turbo run build
-            pm2 restart http-server
-            pm2 restart ws-server
-            pm2 restart fe
-          EOF
+      - run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" &> ~/ssh_key
+          mkdir -p /home/runner/.ssh
+          ls /home/runner/.ssh
+          touch /home/runner/.ssh/known_hosts
+          echo "${{ secrets.KNOWN_HOSTS }}" &> /home/runner/.ssh/known_hosts
+          chmod 700 /home/runner/ssh_key
+          ssh -i ~/ssh_key root@64.227.147.124 -t "cd week-25-ci-next-app/ && git pull origin main && export PATH=/root/.nvm/versions/node/v22.13.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin && npm install -g pnpm && pnpm install && pnpm run build && pm2 restart fe-sever && pm2 restart http-sever && pm2 restart ws-sever"
