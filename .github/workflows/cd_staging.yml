@@ -16,4 +16,4 @@ jobs:
             cd /home/ubuntu/monorepo
             git pull
             export PATH=/home/ubuntu/.nvm/versions/node/v22.14.0/bin:$PATH
-            npm --version
+            pnpm --version
