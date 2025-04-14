@@ -15,8 +15,6 @@ jobs:
           script: whoami
       - name: Pulling recent Changes
         run: |
-          cd
+          cd home/ubuntu
           ls
-          cd "monorepo"
-          git pull
         shell: bash
